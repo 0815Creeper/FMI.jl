@@ -85,7 +85,7 @@ simData = simulate(fmu, (tStart, tStop); recordValues=vrs)
 
     [34mSimulating ME-FMU ...   0%|█                             |  ETA: N/A[39m
 
-    [34mSimulating ME-FMU ... 100%|██████████████████████████████| Time: 0:00:16[39m
+    [34mSimulating ME-FMU ... 100%|██████████████████████████████| Time: 0:00:15[39m
     
 
 
@@ -233,7 +233,7 @@ fmi2SetFctGetReal(fmu, myGetReal!)
 
 
 
-    Ptr{Nothing} @0x0000018c050a0fc0
+    Ptr{Nothing} @0x00000224047f0fc0
 
 
 
