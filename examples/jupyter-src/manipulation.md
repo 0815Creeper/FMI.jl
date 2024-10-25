@@ -19,7 +19,7 @@ This example shows how to overwrite a FMI function with a custom C-function. For
 
 
 ## Other formats
-Besides, this [Jupyter Notebook](https://github.com/thummeto/FMI.jl/blob/examples/examples/src/manipulation.ipynb) there is also a [Julia file](https://github.com/thummeto/FMI.jl/blob/examples/examples/src/manipulation.jl) with the same name, which contains only the code cells and for the documentation there is a [Markdown file](https://github.com/thummeto/FMI.jl/blob/examples/examples/src/manipulation.md) corresponding to the notebook.  
+Besides, this [Jupyter Notebook](https://github.com/thummeto/FMI.jl/blob/examples/examples/jupyter-src/manipulation.ipynb) there is also a [Julia file](https://github.com/thummeto/FMI.jl/blob/examples/examples/jupyter-src/manipulation.jl) with the same name, which contains only the code cells and for the documentation there is a [Markdown file](https://github.com/thummeto/FMI.jl/blob/examples/examples/jupyter-src/manipulation.md) corresponding to the notebook.  
 
 ## Code section
 
@@ -233,7 +233,7 @@ fmi2SetFctGetReal(fmu, myGetReal!)
 
 
 
-    Ptr{Nothing} @0x00000224047f0fc0
+    Ptr{Nothing} @0x0000023a22670fc0
 
 
 
