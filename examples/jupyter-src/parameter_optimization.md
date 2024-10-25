@@ -102,6 +102,8 @@ info(fmu)
     		Var. com. steps:	true
     		Input interpol.:	true
     		Max order out. der.:	1
+
+    
     	Supports Model-Exchange:	true
     		Model identifier:	SpringPendulum1D
     		Get/Set State:		true
@@ -205,10 +207,10 @@ p_res = opt.minimizer # the optimized parameters
 
 
     4-element Vector{Float64}:
-     1.0007838480071425
-     0.9773673396537332
-     0.12719854932488964
-     0.11071657455513861
+     1.0015822393132512
+     0.9774406281241297
+     0.12450746378529444
+     0.10843397065857412
 
 
 
