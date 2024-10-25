@@ -99,8 +99,6 @@ info(fmu)
     		Model identifier:	SpringFrictionPendulum1D
     		Get/Set State:		true
     		Serialize State:	true
-
-    
     		Dir. Derivatives:	true
     ##################### End information for FMU #####################
     
@@ -159,7 +157,7 @@ instanceFMU = fmi2Instantiate!(fmu)
 
     FMU:            SpringFrictionPendulum1D
         InstanceName:   SpringFrictionPendulum1D
-        Address:        Ptr{Nothing} @0x00000156189007f0
+        Address:        Ptr{Nothing} @0x0000018a0aeedd60
         State:          0
         Logging:        false
         FMU time:       -Inf
