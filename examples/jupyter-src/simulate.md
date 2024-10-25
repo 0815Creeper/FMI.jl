@@ -95,12 +95,12 @@ info(myFMU)
     	Var. naming conv.:		structured
     	Event indicators:		24
     	Inputs:				0
+
+    
     	Outputs:			0
     	States:				2
     		33554432 ["mass.s"]
     		33554433 ["mass.v", "mass.v_relfric"]
-
-    
     	Parameters:			12
     		16777216 ["fricScale"]
     		16777217 ["s0"]
