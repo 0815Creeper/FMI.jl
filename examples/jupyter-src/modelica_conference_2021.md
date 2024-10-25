@@ -82,6 +82,8 @@ info(fmu)
     		16777218 ["v0"]
     		16777219 ["fixed.s0"]
     		...
+    
+
     		16777223 ["mass.smin"]
     		16777224 ["mass.v_small"]
     		16777225 ["mass.L"]
@@ -157,7 +159,7 @@ instanceFMU = fmi2Instantiate!(fmu)
 
     FMU:            SpringFrictionPendulum1D
         InstanceName:   SpringFrictionPendulum1D
-        Address:        Ptr{Nothing} @0x0000018a0aeedd60
+        Address:        Ptr{Nothing} @0x000002305e290990
         State:          0
         Logging:        false
         FMU time:       -Inf
