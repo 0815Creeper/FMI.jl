@@ -119,6 +119,8 @@ info(myFMU)
     		Serialize State:	true
     		Dir. Derivatives:	true
     ##################### End information for FMU #####################
+
+    
     
 
 ### First Instance
@@ -134,7 +136,7 @@ println(c1)
 
     FMU:            SpringPendulum1D
         InstanceName:   SpringPendulum1D
-        Address:        Ptr{Nothing} @0x0000027531458ea0
+        Address:        Ptr{Nothing} @0x0000022e0d813100
         State:          0
         Logging:        true
         FMU time:       -Inf
@@ -179,7 +181,7 @@ println(c2)
 
     FMU:            SpringPendulum1D
         InstanceName:   SpringPendulum1D
-        Address:        Ptr{Nothing} @0x0000027531455650
+        Address:        Ptr{Nothing} @0x0000022e0d8162b0
         State:          0
         Logging:        true
         FMU time:       -Inf
