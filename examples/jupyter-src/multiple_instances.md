@@ -26,7 +26,7 @@ The example is primarily intended for users who work in the field of simulations
 
 
 ## Other formats
-Besides, this [Jupyter Notebook](https://github.com/thummeto/FMI.jl/blob/examples/examples/src/multiple_instances.ipynb) there is also a [Julia file](https://github.com/thummeto/FMI.jl/blob/examples/examples/src/multiple_instances.jl) with the same name, which contains only the code cells and for the documentation there is a [Markdown file](https://github.com/thummeto/FMI.jl/blob/examples/examples/src/multiple_instances.md) corresponding to the notebook.  
+Besides, this [Jupyter Notebook](https://github.com/thummeto/FMI.jl/blob/examples/examples/jupyter-src/multiple_instances.ipynb) there is also a [Julia file](https://github.com/thummeto/FMI.jl/blob/examples/examples/jupyter-src/multiple_instances.jl) with the same name, which contains only the code cells and for the documentation there is a [Markdown file](https://github.com/thummeto/FMI.jl/blob/examples/examples/jupyter-src/multiple_instances.md) corresponding to the notebook.  
 
 
 ## Getting started
@@ -95,6 +95,8 @@ info(myFMU)
     	Inputs:				0
     	Outputs:			0
     	States:				2
+
+    
     		33554432 ["mass.s"]
     		33554433 ["mass.v"]
     	Parameters:			7
@@ -119,8 +121,6 @@ info(myFMU)
     		Serialize State:	true
     		Dir. Derivatives:	true
     ##################### End information for FMU #####################
-
-    
     
 
 ### First Instance
@@ -136,7 +136,7 @@ println(c1)
 
     FMU:            SpringPendulum1D
         InstanceName:   SpringPendulum1D
-        Address:        Ptr{Nothing} @0x0000022e0d813100
+        Address:        Ptr{Nothing} @0x0000016f95d049a0
         State:          0
         Logging:        true
         FMU time:       -Inf
@@ -181,7 +181,7 @@ println(c2)
 
     FMU:            SpringPendulum1D
         InstanceName:   SpringPendulum1D
-        Address:        Ptr{Nothing} @0x0000022e0d8162b0
+        Address:        Ptr{Nothing} @0x0000016f95d03fb0
         State:          0
         Logging:        true
         FMU time:       -Inf
