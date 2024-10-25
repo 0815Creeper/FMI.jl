@@ -32,7 +32,7 @@ The example is primarily intended for users who work in the field of simulations
 
 
 ## Other formats
-Besides, this [Jupyter Notebook](https://github.com/thummeto/FMI.jl/blob/examples/examples/src/multiprocessing.ipynb) there is also a [Julia file](https://github.com/thummeto/FMI.jl/blob/examples/examples/src/multiprocessing.jl) with the same name, which contains only the code cells and for the documentation there is a [Markdown file](https://github.com/thummeto/FMI.jl/blob/examples/examples/src/multiprocessing.md) corresponding to the notebook.  
+Besides, this [Jupyter Notebook](https://github.com/thummeto/FMI.jl/blob/examples/examples/jupyter-src/multiprocessing.ipynb) there is also a [Julia file](https://github.com/thummeto/FMI.jl/blob/examples/examples/jupyter-src/multiprocessing.jl) with the same name, which contains only the code cells and for the documentation there is a [Markdown file](https://github.com/thummeto/FMI.jl/blob/examples/examples/jupyter-src/multiprocessing.md) corresponding to the notebook.  
 
 
 ## Getting started
@@ -101,6 +101,9 @@ workers()
           From worker 2:	Hello World!
           From worker 3:	Hello World!
 
+    
+    
+
 ### Simulation setup
 
 Next, the batch size and input values are defined.
@@ -115,29 +118,26 @@ batchSize = 16
 input_values = collect(collect.(eachrow(rand(batchSize,2))))
 ```
 
-    
-    
-
 
 
 
     16-element Vector{Vector{Float64}}:
-     [0.3887401959012622, 0.8753211944580439]
-     [0.10332913352491635, 0.06249842630766378]
-     [0.16340524809793855, 0.6351660259827768]
-     [0.9743458699415157, 0.8508215543799434]
-     [0.8941205532968789, 0.699499153133245]
-     [0.9576621071897252, 0.35387765134575555]
-     [0.4309625810375054, 0.12226793567021954]
-     [0.7010009417015105, 0.14742409298498715]
-     [0.08224536570601926, 0.5149533298269948]
-     [0.6213770264217287, 0.6209452689906899]
-     [0.995260765398036, 0.6948325762806815]
-     [0.09401644326633629, 0.06787072914568215]
-     [0.3514889045026053, 0.4400313223599569]
-     [0.06986999260676974, 0.05866196008666047]
-     [0.9707384955574926, 0.12692105331269599]
-     [0.5058670532726229, 0.6049381567596225]
+     [0.9501502599394878, 0.44988400120546945]
+     [0.0034176714610868464, 0.7710898286029835]
+     [0.3397293521917595, 0.022406568671203164]
+     [0.2986907355604539, 0.745708605222811]
+     [0.7867754828871543, 0.6964775287125131]
+     [0.8759717985665576, 0.04249784438886295]
+     [0.9328235472174792, 0.4097151489195444]
+     [0.17877487802151426, 0.779940985492635]
+     [0.35147418506888317, 0.5259855766310562]
+     [0.13588168132052014, 0.1626978099649039]
+     [0.9200794465033671, 0.08286072907602315]
+     [0.23445545673491242, 0.1136795314533442]
+     [0.5229133243665619, 0.9230351077799116]
+     [0.5204222328104253, 0.7016920589706104]
+     [0.981985866323443, 0.5790234138374878]
+     [0.5337958233742034, 0.782099518065094]
 
 
 
@@ -181,15 +181,15 @@ Running a single evaluation is pretty quick, therefore the speed can be better t
 
 
     BenchmarkTools.Trial: 2 samples with 1 evaluation.
-     Range [90m([39m[36m[1mmin[22m[39m … [35mmax[39m[90m):  [39m[36m[1m3.070 s[22m[39m … [35m   3.380 s[39m  [90m┊[39m GC [90m([39mmin … max[90m): [39m0.73% … 7.55%
-     Time  [90m([39m[34m[1mmedian[22m[39m[90m):     [39m[34m[1m3.225 s               [22m[39m[90m┊[39m GC [90m([39mmedian[90m):    [39m4.30%
-     Time  [90m([39m[32m[1mmean[22m[39m ± [32mσ[39m[90m):   [39m[32m[1m3.225 s[22m[39m ± [32m219.576 ms[39m  [90m┊[39m GC [90m([39mmean ± σ[90m):  [39m4.30% ± 4.82%
+     Range [90m([39m[36m[1mmin[22m[39m … [35mmax[39m[90m):  [39m[36m[1m3.221 s[22m[39m … [35m   3.574 s[39m  [90m┊[39m GC [90m([39mmin … max[90m): [39m0.00% … 12.33%
+     Time  [90m([39m[34m[1mmedian[22m[39m[90m):     [39m[34m[1m3.398 s               [22m[39m[90m┊[39m GC [90m([39mmedian[90m):    [39m6.48%
+     Time  [90m([39m[32m[1mmean[22m[39m ± [32mσ[39m[90m):   [39m[32m[1m3.398 s[22m[39m ± [32m249.392 ms[39m  [90m┊[39m GC [90m([39mmean ± σ[90m):  [39m6.48% ±  8.72%
     
       [34m█[39m[39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [32m [39m[39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m█[39m [39m 
       [34m█[39m[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[32m▁[39m[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m▁[39m█[39m [39m▁
-      3.07 s[90m         Histogram: frequency by time[39m         3.38 s [0m[1m<[22m
+      3.22 s[90m         Histogram: frequency by time[39m         3.57 s [0m[1m<[22m
     
-     Memory estimate[90m: [39m[33m300.76 MiB[39m, allocs estimate[90m: [39m[33m7603698[39m.
+     Memory estimate[90m: [39m[33m300.76 MiB[39m, allocs estimate[90m: [39m[33m7603709[39m.
 
 
 
@@ -209,8 +209,8 @@ println("Single Threaded")
 
 
     BenchmarkTools.Trial: 1 sample with 1 evaluation.
-     Single result which took [34m49.274 s[39m (0.90% GC) to evaluate,
-     with a memory estimate of [33m4.70 GiB[39m, over [33m121659156[39m allocations.
+     Single result which took [34m50.653 s[39m (1.23% GC) to evaluate,
+     with a memory estimate of [33m4.70 GiB[39m, over [33m121659332[39m allocations.
 
 
 
@@ -231,8 +231,8 @@ println("Multi Threaded")
 
 
     BenchmarkTools.Trial: 1 sample with 1 evaluation.
-     Single result which took [34m29.588 s[39m (0.00% GC) to evaluate,
-     with a memory estimate of [33m99.31 KiB[39m, over [33m1587[39m allocations.
+     Single result which took [34m29.822 s[39m (0.00% GC) to evaluate,
+     with a memory estimate of [33m99.38 KiB[39m, over [33m1591[39m allocations.
 
 
 
