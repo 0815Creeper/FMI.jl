@@ -9,7 +9,7 @@ on:
     paths:
       - 'src/**'
       - 'test/**'
-      - '.github/workflows/Test.yml'
+      - '.github/workflows/TestLatest.yml'
       - 'Project.toml'
 
 jobs:
