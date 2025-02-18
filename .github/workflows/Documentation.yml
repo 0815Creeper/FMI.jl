@@ -15,6 +15,7 @@ on:
       - 'docs/**'
       - 'README.md'
       - '.github/workflows/Documentation.yml'
+      - '.github/workflows/Example.yml'
     tags: 
       - '*'
 
