@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       add_workflow:
-        description: 'workflow from auxme/JuliaCIWorkflows to add to this repo (run empty once for update, if option is not yet available)'
+        description: 'add new workflow' #'workflow from auxme/JuliaCIWorkflows to add to this repo (run empty once for update, if option is not yet available)'
         required: false
         type: choice
   pull_request:
@@ -23,9 +23,17 @@ jobs:
       - name: "Check out repository"
         uses: actions/checkout@v4
         with:
-          filter: '.github/workflows'
+          sparse-checkout: '.github'
+          path: working_repo
+      - name: "Check out auxme/JuliaCIWorkflows"
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: '.github'
+          repository: 0815creeper/JuliaCIWorkflows
+          path: reference_repo
       - name: handle_arguments
         if: github.event_name == 'workflow_dispatch' && ${{ inputs.add_workflow }} != ''
         run: echo 'add ${{ inputs.add_workflow }} workflow to this repo'
       - name: check_all_if_they_are_latest
-        run: tree
+        run: tree -a
+      
