@@ -3,8 +3,7 @@ name: auxme_manage_JuliaCIWorkflows
 env: 
   PR_BRANCH_NAME: bot_auxme_JuliaCIWorkflows_patches_${{ github.ref_name }}
 
-permissions:
-  contents: write
+permissions: write-all
 
 on:
   # manual trigger
