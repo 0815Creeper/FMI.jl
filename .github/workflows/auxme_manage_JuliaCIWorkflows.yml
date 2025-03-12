@@ -5,7 +5,6 @@ env:
 
 permissions:
   contents: write
-  workflows: write
 
 on:
   # manual trigger
