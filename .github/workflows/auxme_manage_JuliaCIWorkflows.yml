@@ -54,6 +54,7 @@ jobs:
         with:
           sparse-checkout: '.github'
           path: working_repo
+          token: ${{ secrets.GITHUB_TOKEN }}
       - name: "Check out auxme/JuliaCIWorkflows"
         uses: actions/checkout@v4
         with:
@@ -95,7 +96,7 @@ jobs:
           cd working_repo
           git add .*
           git commit -m "inital load of ${{ inputs.add_workflow }}.yml from auxme/JuliaCIWorkflows"
-      - name: set_correct_git_branch
+      - name: publish_force_push_git_branch
         run: |
           cd working_repo
           git checkout -b $PR_BRANCH_NAME
