@@ -22,7 +22,7 @@ on:
     - cron: '17 4 * * *'
 
 jobs:
-  update_self:
+  update_JuliaCIWorkflows_repo:
     runs-on: ubuntu-latest
     if: github.repository == '0815creeper/JuliaCIWorkflows'
     steps:
@@ -31,7 +31,7 @@ jobs:
         with:
           sparse-checkout: '.github'
           path: working_repo
-      - name: Update values.yaml
+      - name: TODO!!!
         uses: fjogeleit/yaml-update-action@main
         with:
           valueFile: 'file.yaml'
@@ -58,5 +58,10 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && ${{ inputs.add_workflow }} != ''
         run: echo 'add ${{ inputs.add_workflow }} workflow to this repo'
       - name: check_all_if_they_are_latest
-        run: tree -a
+        run: |
+          files=( $(find -type f -iname "*.yml" | sort ) )
+          for file in "${files[@]}"; do
+            echo "$file"
+          done
+
       
