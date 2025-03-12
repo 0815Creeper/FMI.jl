@@ -62,13 +62,21 @@ jobs:
           FILES=( $(find working_repo/.github -type f -printf "%P\n" -iname "*.yml" | sort ) )
           for FILE in "${FILES[@]}"; do
             if [ -f reference_repo/.github/$FILE ]; then
-              echo "$FILE"
-              diff working_repo/.github/$FILE reference_repo/.github/$FILE
-              echo $?
-              echo "-------------"
+              if ! cmp -s working_repo/.github/$FILE reference_repo/.github/$FILE; then
+                echo "$FILE is different, adding most recent version from auxme/JuliaCIWorkflows"
+                cp -f reference_repo/.github/$FILE working_repo/.github/$FILE
+                if [ -f reference_repo/.github/${FILE}_WARNING ]; then
+                  cat reference_repo/.github/${FILE}_WARNING
+                fi
+              fi
             else
               echo "workflow $FILE is not part of auxme/JuliaCIWorkflows, it seems to be specific to this repo and will be ignored"
             fi
           done
+          cd working_repo
+          echo $(git status)
+          git add *
+          echo $(git status)
+          
 
       
