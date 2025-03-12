@@ -14,10 +14,12 @@ on:
         description: 'add new workflow' #'workflow from auxme/JuliaCIWorkflows to add to this repo (run empty once for update, if option is not yet available)'
         required: false
         type: choice
+        default: ''
         options:
-          - a
-          - b
-          - c
+          - ''
+          - 'a'
+          - 'b'
+          - 'c'
   pull_request:
   push:
     branches: 
