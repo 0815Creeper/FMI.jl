@@ -1,5 +1,12 @@
 name: auxme_manage_JuliaCIWorkflows
 
+env: 
+  PR_BRANCH_NAME: bot_auxme_JuliaCIWorkflows_patches_${{ github.ref_name }}
+
+permissions:
+  contents: write
+  workflows: write
+
 on:
   # manual trigger
   workflow_dispatch:
@@ -54,9 +61,10 @@ jobs:
           sparse-checkout: '.github'
           repository: 0815creeper/JuliaCIWorkflows
           path: reference_repo
-      - name: handle_arguments
-        if: github.event_name == 'workflow_dispatch' && inputs.add_workflow != ''
-        run: echo '${{ github.event_name }} wants to add ${{ inputs.add_workflow }} workflow to this repo'
+      - name: set_github_actor
+        run: |
+          git config --global user.email "nomail@nomail.no"
+          git config --global user.name "auxme_manage_JuliaCIWorkflows[bot]"
       - name: check_all_if_they_are_latest
         run: |
           FILES=( $(find working_repo/.github -type f -iname "*.yml" -printf "%P\n" | sort ) )
@@ -74,9 +82,22 @@ jobs:
             fi
           done
           cd working_repo
-          echo $(git status)
           git add .*
-          echo $(git status)
-          
-
-      
+          git commit -m "reset/updated all existing workflows to latest auxme/JuliaCIWorkflows version"
+      - name: handle_arguments
+        if: github.event_name == 'workflow_dispatch' && inputs.add_workflow != ''
+        run: |
+          echo '${{ github.event_name }} wants to add ${{ inputs.add_workflow }} workflow to this repo'
+          echo '::notice,title={Adding Workflow ${{ inputs.add_workflow }}}::{${{ inputs.add_workflow }} is to be added to this repository}'
+          cp -f reference_repo/.github/${{ inputs.add_workflow }}.yml working_repo/.github/${{ inputs.add_workflow }}.yml
+          if [ -f reference_repo/.github/${{ inputs.add_workflow }}_WARNING ]; then
+            cat reference_repo/.github/${{ inputs.add_workflow }}_WARNING
+          fi
+          cd working_repo
+          git add .*
+          git commit -m "inital load of ${{ inputs.add_workflow }}.yml from auxme/JuliaCIWorkflows"
+      - name: set_correct_git_branch
+        run: |
+          cd working_repo
+          git checkout -b $PR_BRANCH_NAME
+          git push -u origin $PR_BRANCH_NAME --force
