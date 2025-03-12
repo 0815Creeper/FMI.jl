@@ -59,10 +59,10 @@ jobs:
         run: echo '${{ github.event_name }} wants to add ${{ inputs.add_workflow }} workflow to this repo'
       - name: check_all_if_they_are_latest
         run: |
-          FILES=( $(find working_repo/.github -type f -printf "%P\n" -iname "*.yml" | sort ) )
+          FILES=( $(find working_repo/.github -type f -iname "*.yml" -printf "%P\n" | sort ) )
           for FILE in "${FILES[@]}"; do
             if [ -f reference_repo/.github/$FILE ]; then
-              if ! cmp -s working_repo/.github/$FILE reference_repo/.github/$FILE; then
+              if ! diff -q working_repo/.github/$FILE reference_repo/.github/$FILE >/dev/null; then
                 echo "$FILE is different, adding most recent version from auxme/JuliaCIWorkflows"
                 cp -f reference_repo/.github/$FILE working_repo/.github/$FILE
                 if [ -f reference_repo/.github/${FILE}_WARNING ]; then
@@ -75,7 +75,7 @@ jobs:
           done
           cd working_repo
           echo $(git status)
-          git add *
+          git add .*
           echo $(git status)
           
 
