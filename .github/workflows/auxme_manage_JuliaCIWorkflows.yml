@@ -17,16 +17,15 @@ on:
     - cron: '17 4 * * *'
 
 jobs:
-  handle_arguments:
+  manage_JuliaCIWorkflows:
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' && ${{ inputs.add_workflow }} != ''
-    steps: 
-      - name: add ${{ inputs.add_workflow }} workflow to this repo
-        run: echo 'HiWorld! ${{ inputs.add_workflow }}'
-  check_is_latest:
     steps:
       - name: "Check out repository"
         uses: actions/checkout@v4
         with:
           filter: '.github/workflows'
-      - run: tree
+      - name: handle_arguments
+        if: github.event_name == 'workflow_dispatch' && ${{ inputs.add_workflow }} != ''
+        run: echo 'add ${{ inputs.add_workflow }} workflow to this repo'
+      - name: check_all_if_they_are_latest
+        run: tree
