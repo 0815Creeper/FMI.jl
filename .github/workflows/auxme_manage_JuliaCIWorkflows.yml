@@ -24,7 +24,7 @@ on:
 jobs:
   update_self:
     runs-on: ubuntu-latest
-    if: ${{ github.repository }} == 0815creeper/JuliaCIWorkflows
+    if: github.repository == '0815creeper/JuliaCIWorkflows'
     steps:
       - name: "Check out repository"
         uses: actions/checkout@v4
@@ -41,7 +41,7 @@ jobs:
           message: 'new workflow found and added to selectable options of auxme_manage_JuliaCIWorkflows'
   manage_JuliaCIWorkflows:
     runs-on: ubuntu-latest
-    if: ${{ github.repository }} != 0815creeper/JuliaCIWorkflows
+    if: github.repository != '0815creeper/JuliaCIWorkflows'
     steps:
       - name: "Check out repository"
         uses: actions/checkout@v4
