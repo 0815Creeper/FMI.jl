@@ -55,13 +55,20 @@ jobs:
           repository: 0815creeper/JuliaCIWorkflows
           path: reference_repo
       - name: handle_arguments
-        if: github.event_name == 'workflow_dispatch' && ${{ inputs.add_workflow }} != ''
-        run: echo 'add ${{ inputs.add_workflow }} workflow to this repo'
+        if: github.event_name == 'workflow_dispatch' && inputs.add_workflow != ''
+        run: echo '${{ github.event_name }} wants to add ${{ inputs.add_workflow }} workflow to this repo'
       - name: check_all_if_they_are_latest
         run: |
-          files=( $(find -type f -iname "*.yml" | sort ) )
-          for file in "${files[@]}"; do
-            echo "$file"
+          FILES=( $(find working_repo/.github -type f -printf "%P\n" -iname "*.yml" | sort ) )
+          for FILE in "${FILES[@]}"; do
+            if [ -f reference_repo/.github/$FILE ]; then
+              echo "$FILE"
+              diff working_repo/.github/$FILE reference_repo/.github/$FILE
+              echo $?
+              echo "-------------"
+            else
+              echo "workflow $FILE is not part of auxme/JuliaCIWorkflows, it seems to be specific to this repo and will be ignored"
+            fi
           done
 
       
