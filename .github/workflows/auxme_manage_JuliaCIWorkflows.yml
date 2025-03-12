@@ -8,17 +8,40 @@ on:
         description: 'add new workflow' #'workflow from auxme/JuliaCIWorkflows to add to this repo (run empty once for update, if option is not yet available)'
         required: false
         type: choice
+        options:
+          - a
+          - b
+          - c
   pull_request:
   push:
     branches: 
+      - '**'
       - '!examples'
       - '!gh-pages'
   schedule:
     - cron: '17 4 * * *'
 
 jobs:
+  update_self:
+    runs-on: ubuntu-latest
+    if: ${{ github.repository }} == 0815creeper/JuliaCIWorkflows
+    steps:
+      - name: "Check out repository"
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: '.github'
+          path: working_repo
+      - name: Update values.yaml
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          valueFile: 'file.yaml'
+          propertyPath: 'on.workflow_dispatch.inputs.add_workflow.options'
+          value: blabla
+          commitChange: true
+          message: 'new workflow found and added to selectable options of auxme_manage_JuliaCIWorkflows'
   manage_JuliaCIWorkflows:
     runs-on: ubuntu-latest
+    if: ${{ github.repository }} != 0815creeper/JuliaCIWorkflows
     steps:
       - name: "Check out repository"
         uses: actions/checkout@v4
