@@ -1,0 +1,32 @@
+name: auxme_manage_JuliaCIWorkflows
+
+on:
+  # manual trigger
+  workflow_dispatch:
+    inputs:
+      add_workflow:
+        description: 'workflow from auxme/JuliaCIWorkflows to add to this repo (run empty once for update, if option is not yet available)'
+        required: false
+        type: choice
+  pull_request:
+  push:
+    branches: 
+      - '!examples'
+      - '!gh-pages'
+  schedule:
+    - cron: '17 4 * * *'
+
+jobs:
+  handle_arguments:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && ${{ inputs.add_workflow }} != ''
+    steps: 
+      - name: add ${{ inputs.add_workflow }} workflow to this repo
+        run: echo 'HiWorld! ${{ inputs.add_workflow }}'
+  check_is_latest:
+    steps:
+      - name: "Check out repository"
+        uses: actions/checkout@v4
+        with:
+          filter: '.github/workflows'
+      - run: tree
