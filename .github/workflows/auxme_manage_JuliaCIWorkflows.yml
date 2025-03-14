@@ -91,15 +91,6 @@ jobs:
           ssh-key: ${{ secrets.COMPATHELPER_PRIV }}
           token: ${{ secrets.GITHUB_TOKEN }}
       - run: echo $SSH_KEY
-      - name: setup-key
-        run: |
-          mkdir -p ~/.ssh
-          echo "key would be:"
-          echo "${{ secrets.COMPATHELPER_PRIV }}"
-          echo "that was key"
-          echo "${{ secrets.COMPATHELPER_PRIV }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan github.com >> ~/.ssh/known_hosts
       - name: "Check out auxme/JuliaCIWorkflows"
         uses: actions/checkout@v4
         with:
