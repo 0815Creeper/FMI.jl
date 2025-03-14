@@ -117,15 +117,6 @@ jobs:
               echo "::notice file=$FILE,title=Repo-specific_workflow::workflow $FILE is not part of auxme/JuliaCIWorkflows, it seems to be specific to this repo and will be ignored"
             fi
           done
-      - name: commit_if_not_latest
-        run: |
-          cd working_repo
-          if [[ `git status --porcelain` ]]; then
-            git add .*
-            git commit -m "reset/updated all existing workflows to latest auxme/JuliaCIWorkflows version"
-          else
-            echo "::notice title=All_workflows_are_up_to_date::Nothing to update"
-          fi
       - name: handle_arguments
         if: github.event_name == 'workflow_dispatch' && inputs.add_workflow != ''
         run: |
@@ -135,15 +126,6 @@ jobs:
           if [ -f reference_repo/.github/${{ inputs.add_workflow }}_WARNING ]; then
             cat reference_repo/.github/${{ inputs.add_workflow }}_WARNING
           fi
-          cd working_repo
-          git add .*
-          git commit -m "inital load of ${{ inputs.add_workflow }}.yml from auxme/JuliaCIWorkflows"
-      - name: publish_force_push_git_branch
-        if: github.event_name != 'pull_request'
-        run: |
-          cd working_repo
-          git checkout -b $PR_BRANCH_NAME
-          git push -u origin $PR_BRANCH_NAME --force
       - name: fail_on_PR_with_wrong_workflows
         if: github.event_name == 'pull_request'
         run: |
