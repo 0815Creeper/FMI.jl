@@ -64,7 +64,7 @@ jobs:
         with:
           sparse-checkout: '.github'
           path: working_repo
-          ssh-key: $SSH_KEY
+          ssh-key: ${{ secrets.COMPATHELPER_PRIV }}
 
       - name: TODO!!!
         uses: fjogeleit/yaml-update-action@main
@@ -86,7 +86,7 @@ jobs:
         with:
           sparse-checkout: '.github'
           path: working_repo
-          ssh_key: $SSH_KEY
+          ssh-key: ${{ secrets.COMPATHELPER_PRIV }}
       - name: setup-key
         run: |
           mkdir -p ~/.ssh
