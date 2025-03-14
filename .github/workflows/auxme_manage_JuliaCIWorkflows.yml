@@ -79,6 +79,9 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository != '0815creeper/JuliaCIWorkflows'
     steps:
+      - run: cat $GITHUB_ENV
+      - run: echo "$SSH_KEY"
+      - run: echo $SSH_KEY
       - name: "Check out repository"
         uses: actions/checkout@v4
         with:
@@ -86,7 +89,6 @@ jobs:
           path: working_repo
           ssh-key: "$SSH_KEY"
           token: ${{ secrets.GITHUB_TOKEN }}
-      - run: echo $SSH_KEY
       - name: "Check out auxme/JuliaCIWorkflows"
         uses: actions/checkout@v4
         with:
