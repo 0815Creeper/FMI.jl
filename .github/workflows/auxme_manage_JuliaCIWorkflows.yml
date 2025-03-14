@@ -105,7 +105,11 @@ jobs:
         with:
           sparse-checkout: '.github'
           repository: 0815creeper/JuliaCIWorkflows
-          path: reference_repo
+          path: reference_repo      
+      - name: set_github_actor
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "JuliaCIWorkflows Action"
       - name: check_all_if_they_are_latest
         run: |
           FILES=( $(find working_repo/.github -type f -iname "*.yml" -printf "%P\n" | sort ) )
