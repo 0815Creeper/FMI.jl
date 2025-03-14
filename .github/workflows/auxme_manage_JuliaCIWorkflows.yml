@@ -90,8 +90,10 @@ jobs:
       - name: setup-key
         run: |
           mkdir -p ~/.ssh
-          echo "$COMPATHELPER_PRIV"
-          echo "$COMPATHELPER_PRIV" > ~/.ssh/id_rsa
+          echo "key would be:"
+          echo "${{ secrets.COMPATHELPER_PRIV }}"
+          echo "that was key"
+          echo "${{ secrets.COMPATHELPER_PRIV }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan github.com >> ~/.ssh/known_hosts
       - name: "Check out auxme/JuliaCIWorkflows"
