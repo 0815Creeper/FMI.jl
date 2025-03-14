@@ -50,7 +50,7 @@ jobs:
           propertyPath: 'on.workflow_dispatch.inputs.add_workflow.options'
           value: blabla
           commitChange: true
-          message: 'new workflow found and added to selectable options of auxme_manage_JuliaCIWorkflows'
+          message: 'new workflow found and added to selectable options of ${{ github.event.repository.owner.name }}_manage_JuliaCIWorkflows'
   manage_JuliaCIWorkflows:
     runs-on: ubuntu-latest
     if: ${{ github.event.repository.name != 'JuliaCIWorkflows' }}
@@ -91,11 +91,19 @@ jobs:
           sparse-checkout: '.github'
           path: working_repo
       - name: "Check out ${{ github.event.repository.owner.name }}/JuliaCIWorkflows"
+        if: github.event_name != 'pull_request'
         uses: actions/checkout@v4
         with:
           sparse-checkout: '.github'
           repository: ${{ github.event.repository.owner.name }}/JuliaCIWorkflows
-          path: reference_repo      
+          path: reference_repo 
+      - name: "Check out ${{ github.event.pull_request.base.repo.owner.name }}/JuliaCIWorkflows (triggered by PR)"
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: '.github'
+          repository: ${{ github.event.pull_request.base.repo.owner.name }}/JuliaCIWorkflows
+          path: reference_repo     
       - name: set_github_actor
         if: github.event_name != 'pull_request'
         run: |
@@ -107,14 +115,14 @@ jobs:
           for FILE in "${FILES[@]}"; do
             if [ -f reference_repo/.github/$FILE ]; then
               if ! diff -q working_repo/.github/$FILE reference_repo/.github/$FILE >/dev/null; then
-                echo "::warning file=$FILE,title=different_version_found::$FILE is different, adding most recent version from auxme/JuliaCIWorkflows"
+                echo "::warning file=$FILE,title=different_version_found::$FILE is different, adding most recent version from ${{ github.event.repository.owner.name }}/JuliaCIWorkflows"
                 cp -f reference_repo/.github/$FILE working_repo/.github/$FILE
                 if [ -f reference_repo/.github/${FILE}_WARNING ]; then
                   cat reference_repo/.github/${FILE}_WARNING
                 fi
               fi
             else
-              echo "::notice file=$FILE,title=Repo-specific_workflow::workflow $FILE is not part of auxme/JuliaCIWorkflows, it seems to be specific to this repo and will be ignored"
+              echo "::notice file=$FILE,title=Repo-specific_workflow::workflow $FILE is not part of ${{ github.event.repository.owner.name }}/JuliaCIWorkflows, it seems to be specific to this repo and will be ignored"
             fi
           done
       - name: handle_arguments
@@ -130,7 +138,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           if [[ `git status --porcelain` ]]; then
-            echo "::error title=workflows_not_valid::worksflows are not up-to-date with auxme/JuliaCIWorkflows. Update them. If you want to add a workflow only for this repo, make shure it has not the same name as any workflow from auxme/JuliaCIWorkflows."
+            echo "::error title=workflows_not_valid::worksflows are not up-to-date with ${{ github.event.repository.owner.name }}/JuliaCIWorkflows. Update them. If you want to add a workflow only for this repo, make shure it has not the same name as any workflow from ${{ github.event.repository.owner.name }}/JuliaCIWorkflows."
           fi
       - name: create_PR
         if: github.event_name != 'pull_request'
@@ -140,5 +148,5 @@ jobs:
           branch: ${{ env.PR_BRANCH_NAME }}
           delete-branch: true
           base: ${{ github.ref_name }}
-          title: "reset/updated all existing workflows to latest auxme/JuliaCIWorkflows version"
+          title: "reset/updated all existing workflows to latest ${{ github.event.repository.owner.name }}/JuliaCIWorkflows version"
           body: "this will overrite all local changes to the affected files. If you wish to use repo-specific workflows, it is recommended to name their files differently that those in the juliaCIworkflows repo! Then they will be ignored when updating the other workflows ; make shure all required secrets for the loaded actions are provided (see warnings for the latest execution of the CI-update action on the relevant branch)"
