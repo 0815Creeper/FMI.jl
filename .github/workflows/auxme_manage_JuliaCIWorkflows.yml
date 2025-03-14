@@ -25,6 +25,7 @@ on:
       - '**'
       - '!examples'
       - '!gh-pages'
+      - '!bot_auxme_JuliaCIWorkflows_patches_*'
   schedule:
     - cron: '17 4 * * *'
 
