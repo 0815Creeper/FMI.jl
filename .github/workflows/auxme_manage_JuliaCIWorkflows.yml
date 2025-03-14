@@ -53,7 +53,7 @@ jobs:
           message: 'new workflow found and added to selectable options of auxme_manage_JuliaCIWorkflows'
   manage_JuliaCIWorkflows:
     runs-on: ubuntu-latest
-    if: ${{ github.event.repository.name }} != 'JuliaCIWorkflows'
+    if: ${{ github.event.repository.name != 'JuliaCIWorkflows' }}
     steps:
       # we need a ssh private key to deploy the branch for the PR. we can use existing keys for compathelper or documentation deployment, or we need a seperate one
       - name: Check for available SSH keys and set SSH_KEY
@@ -84,13 +84,13 @@ jobs:
           path: working_repo
           ssh-key: ${{ env.SSH_KEY }}
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: "Check out repository without key (Pull Request mode)"
+      - name: "Check out repository without key (triggered by PR)"
         if: github.event_name == 'pull_request'
         uses: actions/checkout@v4
         with: 
           sparse-checkout: '.github'
           path: working_repo
-      - name: "Check out auxme/JuliaCIWorkflows"
+      - name: "Check out ${{ github.event.repository.owner.name }}/JuliaCIWorkflows"
         uses: actions/checkout@v4
         with:
           sparse-checkout: '.github'
@@ -150,3 +150,13 @@ jobs:
           if [[ `git status --porcelain` ]]; then
             echo "::error title=workflows_not_valid::worksflows are not up-to-date with auxme/JuliaCIWorkflows. Update them. If you want to add a workflow only for this repo, make shure it has not the same name as any workflow from auxme/JuliaCIWorkflows."
           fi
+      - name: create_PR
+        if: github.event_name != 'pull_request'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          path: working_repo
+          branch: ${{ env.PR_BRANCH_NAME }}
+          delete-branch: true
+          base: ${{ github.ref_name }}
+          title: "reset/updated all existing workflows to latest auxme/JuliaCIWorkflows version"
+          body: "this will overrite all local changes to the affected files. If you wish to use repo-specific workflows, it is recommended to name their files differently that those in the juliaCIworkflows repo! Then they will be ignored when updating the other workflows ; make shure all required secrets for the loaded actions are provided (see warnings for the latest execution of the CI-update action on the relevant branch)"
