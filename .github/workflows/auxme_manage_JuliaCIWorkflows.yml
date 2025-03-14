@@ -55,7 +55,7 @@ jobs:
             exit 1
           fi
           echo "END_OF_MULTILINE_SSH_KEY" >> $GITHUB_OUTPUT
-          echo $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT
   update_JuliaCIWorkflows_repo:
     needs: set-ssh-key
     runs-on: ubuntu-latest
