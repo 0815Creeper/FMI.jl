@@ -72,13 +72,13 @@ jobs:
             exit 1
           fi
           echo "EOF" >> $GITHUB_ENV
-          cat $GITHUB_ENV
+      - run: echo $SSH_KEY
       - name: "Check out repository"
         uses: actions/checkout@v4
-        with:
+        with: 
           sparse-checkout: '.github'
           path: working_repo
-          ssh-key: "$SSH_KEY"
+          ssh-key: $SSH_KEY
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: "Check out auxme/JuliaCIWorkflows"
         uses: actions/checkout@v4
