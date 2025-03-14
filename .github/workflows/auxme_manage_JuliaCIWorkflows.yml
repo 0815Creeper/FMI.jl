@@ -97,21 +97,12 @@ jobs:
           sparse-checkout: '.github'
           repository: ${{ github.event.repository.owner.name }}/JuliaCIWorkflows
           path: reference_repo 
-      - name: test echo
-        run: |
-          echo "${{ github.event }}"
-          echo "${{ github.event.pull_request }}"
-          echo "${{ github.event.pull_request.base }}"
-          echo "${{ github.event.pull_request.base.repo }}"
-          echo "${{ github.event.pull_request.base.repo.owner }}"
-          echo "${{ github.event.pull_request.base.repo.owner.name }}"
-          echo "${{ github.event.pull_request.base.repo.owner.login }}"
-      - name: "Check out ${{ github.event.pull_request.base.repo.owner.name }}/JuliaCIWorkflows (triggered by PR)"
+      - name: "Check out ${{ github.event.pull_request.base.repo.owner.login }}/JuliaCIWorkflows (triggered by PR)"
         if: github.event_name == 'pull_request'
         uses: actions/checkout@v4
         with:
           sparse-checkout: '.github'
-          repository: ${{ github.event.pull_request.base.repo.owner.name }}/JuliaCIWorkflows
+          repository: ${{ github.event.pull_request.base.repo.owner.login }}/JuliaCIWorkflows
           path: reference_repo     
       - name: set_github_actor
         if: github.event_name != 'pull_request'
