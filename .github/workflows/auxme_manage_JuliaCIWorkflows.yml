@@ -78,7 +78,7 @@ jobs:
         with: 
           sparse-checkout: '.github'
           path: working_repo
-          ssh-key: $SSH_KEY
+          ssh-key: ${{ env.SSH_KEY }}
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: "Check out auxme/JuliaCIWorkflows"
         uses: actions/checkout@v4
