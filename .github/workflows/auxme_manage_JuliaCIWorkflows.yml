@@ -29,15 +29,40 @@ on:
     - cron: '17 4 * * *'
 
 jobs:
+  # we need a ssh private key to deploy the branch for the PR. we can use existing keys for compathelper or documentation deployment, or we need a seperate one
+  # todo: alternatively copy paste this into each step that needs it. meight be more secure than passing the secret as an output
+  set-ssh-key:
+    runs-on: ubuntu-latest
+    outputs:
+      ssh_key: ${{ steps.set-ssh-key.outputs.ssh_key }}
+    steps:
+      - name: Check for available SSH keys and set SSH_KEY
+        id: set-ssh-key
+        run: |
+          if [ -n "${{ secrets.JULIA_CI_WORKFLOWS_UPDATE_KEY }}" ]; then
+            echo "::set-output name=ssh_key::${{ secrets.JULIA_CI_WORKFLOWS_UPDATE_KEY }}"
+          elif [ -n "${{ secrets.COMPATHELPER_PRIV }}" ]; then
+            echo "::set-output name=ssh_key::${{ secrets.COMPATHELPER_PRIV }}"
+          elif [ -n "${{ secrets.DOCUMENTER_KEY }}" ]; then
+            echo "::set-output name=ssh_key::${{ secrets.DOCUMENTER_KEY }}"
+          else
+            echo "::error::No SSH keys found! Please make sure one of secrets.JULIA_CI_WORKFLOWS_UPDATE_KEY, secrets.COMPATHELPER_PRIV, or secrets.DOCUMENTER_KEY is set according to readme."
+            exit 1
+          fi
   update_JuliaCIWorkflows_repo:
+    needs: set-ssh-key
     runs-on: ubuntu-latest
     if: github.repository == '0815creeper/JuliaCIWorkflows'
+    env:
+      SSH_KEY: ${{ needs.set-ssh-key.outputs.ssh_key }}
     steps:
       - name: "Check out repository"
         uses: actions/checkout@v4
         with:
           sparse-checkout: '.github'
           path: working_repo
+          ssh-key: $SSH_KEY
+
       - name: TODO!!!
         uses: fjogeleit/yaml-update-action@main
         with:
@@ -47,15 +72,18 @@ jobs:
           commitChange: true
           message: 'new workflow found and added to selectable options of auxme_manage_JuliaCIWorkflows'
   manage_JuliaCIWorkflows:
+    needs: set-ssh-key
     runs-on: ubuntu-latest
     if: github.repository != '0815creeper/JuliaCIWorkflows'
+    env:
+      SSH_KEY: ${{ needs.set-ssh-key.outputs.ssh_key }}
     steps:
       - name: "Check out repository"
         uses: actions/checkout@v4
         with:
           sparse-checkout: '.github'
           path: working_repo
-          token: ${{ secrets.GITHUB_TOKEN }}
+          ssh_key: $SSH_KEY
       - name: "Check out auxme/JuliaCIWorkflows"
         uses: actions/checkout@v4
         with:
