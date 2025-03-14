@@ -37,6 +37,7 @@ jobs:
       - name: Check for available SSH keys and set SSH_KEY
         id: set-ssh-key
         run: |
+          echo "SSH_KEY<<EOF" >> $GITHUB_ENV
           if [ -n "${{ secrets.JULIA_CI_WORKFLOWS_UPDATE_KEY }}" ]; then
             echo "SSH_KEY=${{ secrets.JULIA_CI_WORKFLOWS_UPDATE_KEY }}" >> $GITHUB_ENV
             echo "JULIA_CI_WORKFLOWS_UPDATE_KEY found"
@@ -50,6 +51,7 @@ jobs:
             echo "::error::No SSH keys found! Please make sure one of secrets.JULIA_CI_WORKFLOWS_UPDATE_KEY, secrets.COMPATHELPER_PRIV, or secrets.DOCUMENTER_KEY is set according to readme."
             exit 1
           fi
+          echo "EOF" >> $GITHUB_ENV
   update_JuliaCIWorkflows_repo:
     needs: set-ssh-key
     runs-on: ubuntu-latest

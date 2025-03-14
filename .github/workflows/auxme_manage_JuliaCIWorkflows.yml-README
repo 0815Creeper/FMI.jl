@@ -1,0 +1,4 @@
+copy the whole line; e.g.: ssh-ed25519 xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx uni-augsburg\user@pc
+make shure to allow write access on adding the public key
+
+for adding the private key, make shure to name it correctly and copy the whole file including begin and end flags
