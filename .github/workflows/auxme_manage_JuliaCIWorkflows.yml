@@ -66,6 +66,7 @@ jobs:
           sparse-checkout: '.github'
           path: working_repo
           ssh-key: ${{ secrets.COMPATHELPER_PRIV }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: TODO!!!
         uses: fjogeleit/yaml-update-action@main
@@ -88,6 +89,8 @@ jobs:
           sparse-checkout: '.github'
           path: working_repo
           ssh-key: ${{ secrets.COMPATHELPER_PRIV }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - run: echo $SSH_KEY
       - name: setup-key
         run: |
           mkdir -p ~/.ssh
@@ -103,10 +106,6 @@ jobs:
           sparse-checkout: '.github'
           repository: 0815creeper/JuliaCIWorkflows
           path: reference_repo
-      - name: set_github_actor
-        run: |
-          git config --global user.email "nomail@nomail.no"
-          git config --global user.name "auxme_manage_JuliaCIWorkflows[bot]"
       - name: check_all_if_they_are_latest
         run: |
           FILES=( $(find working_repo/.github -type f -iname "*.yml" -printf "%P\n" | sort ) )
