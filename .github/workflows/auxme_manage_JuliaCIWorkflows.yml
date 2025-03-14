@@ -52,6 +52,7 @@ jobs:
             exit 1
           fi
           echo "EOF" >> $GITHUB_ENV
+          cat $GITHUB_ENV
   update_JuliaCIWorkflows_repo:
     needs: set-ssh-key
     runs-on: ubuntu-latest
@@ -62,7 +63,7 @@ jobs:
         with:
           sparse-checkout: '.github'
           path: working_repo
-          ssh-key: $SSH_KEY
+          ssh-key: "$SSH_KEY"
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: TODO!!!
@@ -83,7 +84,7 @@ jobs:
         with:
           sparse-checkout: '.github'
           path: working_repo
-          ssh-key: $SSH_KEY
+          ssh-key: "$SSH_KEY"
           token: ${{ secrets.GITHUB_TOKEN }}
       - run: echo $SSH_KEY
       - name: "Check out auxme/JuliaCIWorkflows"
