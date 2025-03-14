@@ -40,21 +40,20 @@ jobs:
       - name: Check for available SSH keys and set SSH_KEY
         id: set-ssh-key
         run: |
-          echo "text<<END_OF_MULTILINE_SSH_KEY" >> $GITHUB_OUTPUT
           if [ -n "${{ secrets.JULIA_CI_WORKFLOWS_UPDATE_KEY }}" ]; then
-            echo "ssh_key=${{ secrets.JULIA_CI_WORKFLOWS_UPDATE_KEY }}" >> $GITHUB_OUTPUT
+            KEY_BASE64=$(echo -n "${{ secrets.JULIA_CI_WORKFLOWS_UPDATE_KEY }}" | base64)
             echo "JULIA_CI_WORKFLOWS_UPDATE_KEY found"
           elif [ -n "${{ secrets.COMPATHELPER_PRIV }}" ]; then
-            echo "ssh_key=${{ secrets.COMPATHELPER_PRIV }}" >> $GITHUB_OUTPUT
+            KEY_BASE64=$(echo -n "${{ secrets.COMPATHELPER_PRIV }}" | base64)
             echo "COMPATHELPER_PRIV found"
           elif [ -n "${{ secrets.DOCUMENTER_KEY }}" ]; then
-            echo "ssh_key=${{ secrets.DOCUMENTER_KEY }}" >> $GITHUB_OUTPUT
+            KEY_BASE64=$(echo -n "${{ secrets.DOCUMENTER_KEY }}" | base64)
             echo "DOCUMENTER_KEY found"
           else
             echo "::error::No SSH keys found! Please make sure one of secrets.JULIA_CI_WORKFLOWS_UPDATE_KEY, secrets.COMPATHELPER_PRIV, or secrets.DOCUMENTER_KEY is set according to readme."
             exit 1
           fi
-          echo "END_OF_MULTILINE_SSH_KEY" >> $GITHUB_OUTPUT
+          echo "$ssh_key=$KEY_BASE64" >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT
   update_JuliaCIWorkflows_repo:
     needs: set-ssh-key
