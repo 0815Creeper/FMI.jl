@@ -1,4 +1,4 @@
-name: auxme_manage_JuliaCIWorkflows
+name: auxme_manage_JuliaCIWorkflows # name the same as the filename without ".yml"!
 
 env: 
   PR_BRANCH_NAME: bot_${{ github.workflow }}_patches_${{ github.ref_name }} # caution: if modified, also modify on:push:branches:<exclusion_branches>
@@ -26,7 +26,6 @@ on:
           - 'workflows/TagBot'
           - 'workflows/TestLTS'
           - 'workflows/TestLatest'
-          - 'workflows/${{ github.workflow }}'
           #MARKER_FOR_AUTO_UPDATE_END (do not move or tamper with! must be just below last list element)
 
   pull_request:
@@ -71,9 +70,11 @@ jobs:
                 LEADING_WHITESPACES="${zeile%%[![:space:]]*}"
                 FILES=( $(find .github -type f -iname "*.yml" -printf "%P\n" | sort ) )
                 for FILE in "${FILES[@]}"; do
-                  FILE_WITHOUT_EXTENSION="${FILE%.*}"
-                  echo "$FILE"
-                  echo "${LEADING_WHITESPACES}- '$FILE_WITHOUT_EXTENSION'" >> ".github/workflows/${{ github.workflow }}.yml_tempfile_by_action"
+                  if [[ "$FILE" =~ "${{ github.workflow }}" ]]; then
+                    FILE_WITHOUT_EXTENSION="${FILE%.*}"
+                    echo "$FILE"
+                    echo "${LEADING_WHITESPACES}- '$FILE_WITHOUT_EXTENSION'" >> ".github/workflows/${{ github.workflow }}.yml_tempfile_by_action"
+                  fi
                 done
             elif [[ "$replaced_first_occurance" = false && "$within_markers" = true && "$zeile" =~ "#MARKER_FOR_AUTO_UPDATE_END" ]]; then
                 within_markers=false
