@@ -1,7 +1,7 @@
 name: auxme_manage_JuliaCIWorkflows
 
 env: 
-  PR_BRANCH_NAME: bot_auxme_JuliaCIWorkflows_patches_${{ github.ref_name }} # caution: if modified, also modify on:push:branches:<exclusion_branches>
+  PR_BRANCH_NAME: bot_${{ github.workflow }}_patches_${{ github.ref_name }} # caution: if modified, also modify on:push:branches:<exclusion_branches>
 
 permissions: write-all
 
@@ -26,7 +26,7 @@ on:
           - 'workflows/TagBot'
           - 'workflows/TestLTS'
           - 'workflows/TestLatest'
-          - 'workflows/auxme_manage_JuliaCIWorkflows'
+          - 'workflows/${{ github.workflow }}'
           #MARKER_FOR_AUTO_UPDATE_END (do not move or tamper with! must be just below last list element)
 
   pull_request:
@@ -35,7 +35,7 @@ on:
       - '**'
       - '!examples'
       - '!gh-pages'
-      - '!bot_auxme_JuliaCIWorkflows_patches_*'
+      - '!bot_*_patches_*'
   schedule:
     - cron: '17 4 * * *'
 
@@ -55,7 +55,7 @@ jobs:
       #- name: update options list
       #  uses: fjogeleit/yaml-update-action@main
       #  with:
-      #    valueFile: '.github/workflows/auxme_manage_JuliaCIWorkflows.yml'
+      #    valueFile: '.github/workflows/${{ github.workflow }}.yml'
       #    propertyPath: 'on.workflow_dispatch.inputs.add_workflow.options[1]'
       #    value: TEST_abc
       #    commitChange: false
@@ -67,32 +67,32 @@ jobs:
           do
             if [[ "$replaced_first_occurance" = false && "$within_markers" = false && "$zeile" =~ "#MARKER_FOR_AUTO_UPDATE_BEGIN" ]]; then
                 within_markers=true
-                echo "$zeile" >> ".github/workflows/auxme_manage_JuliaCIWorkflows.yml_tempfile_by_action"
+                echo "$zeile" >> ".github/workflows/${{ github.workflow }}.yml_tempfile_by_action"
                 LEADING_WHITESPACES="${zeile%%[![:space:]]*}"
                 FILES=( $(find .github -type f -iname "*.yml" -printf "%P\n" | sort ) )
                 for FILE in "${FILES[@]}"; do
                   FILE_WITHOUT_EXTENSION="${FILE%.*}"
                   echo "$FILE"
-                  echo "${LEADING_WHITESPACES}- '$FILE_WITHOUT_EXTENSION'" >> ".github/workflows/auxme_manage_JuliaCIWorkflows.yml_tempfile_by_action"
+                  echo "${LEADING_WHITESPACES}- '$FILE_WITHOUT_EXTENSION'" >> ".github/workflows/${{ github.workflow }}.yml_tempfile_by_action"
                 done
             elif [[ "$replaced_first_occurance" = false && "$within_markers" = true && "$zeile" =~ "#MARKER_FOR_AUTO_UPDATE_END" ]]; then
                 within_markers=false
                 replaced_first_occurance=true
-                echo "$zeile" >> ".github/workflows/auxme_manage_JuliaCIWorkflows.yml_tempfile_by_action"
+                echo "$zeile" >> ".github/workflows/${{ github.workflow }}.yml_tempfile_by_action"
             elif [ "$within_markers" = false ] ; then
-                echo "$zeile" >> ".github/workflows/auxme_manage_JuliaCIWorkflows.yml_tempfile_by_action"
+                echo "$zeile" >> ".github/workflows/${{ github.workflow }}.yml_tempfile_by_action"
             fi
-          done < ".github/workflows/auxme_manage_JuliaCIWorkflows.yml"
-          mv -f .github/workflows/auxme_manage_JuliaCIWorkflows.yml_tempfile_by_action .github/workflows/auxme_manage_JuliaCIWorkflows.yml
+          done < ".github/workflows/${{ github.workflow }}.yml"
+          mv -f .github/workflows/${{ github.workflow }}.yml_tempfile_by_action .github/workflows/${{ github.workflow }}.yml
       - name: create_PR
         uses: peter-evans/create-pull-request@v7
         with:
           branch: ${{ env.PR_BRANCH_NAME }}
           delete-branch: true
-          commit-message: "updated auxme_manage_JuliaCIWorkflows"
+          commit-message: "updated ${{ github.workflow }}"
           base: ${{ github.ref_name }}
-          title: "updated auxme_manage_JuliaCIWorkflows"
-          body: "updated auxme_manage_JuliaCIWorkflows to include new worflow file as adding option"
+          title: "updated ${{ github.workflow }}"
+          body: "updated ${{ github.workflow }} to include new worflow file as adding option"
   manage_JuliaCIWorkflows:
     runs-on: ubuntu-latest
     if: ${{ github.event.repository.name != 'JuliaCIWorkflows' }}
@@ -115,7 +115,7 @@ jobs:
           fi
       - name: select_reference_repo default 
         if: ${{ env.REF_REPO_OWNER == '' }}
-        run: echo "REF_REPO_OWNER=auxme" >> $GITHUB_ENV
+        run: echo "REF_REPO_OWNER=una-auxme" >> $GITHUB_ENV
       - name: select_reference_repo fail if not set
         if: ${{ env.REF_REPO_OWNER == '' }}
         run: exit 1
