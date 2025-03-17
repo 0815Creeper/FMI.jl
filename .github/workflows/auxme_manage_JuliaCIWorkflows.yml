@@ -85,7 +85,7 @@ jobs:
           commit-message: "updated ${{ github.workflow }}"
           base: ${{ github.ref_name }}
           title: "updated ${{ github.workflow }}"
-          body: "updated ${{ github.workflow }} to include new worflow file as adding option"
+          body: "updated ${{ github.workflow }} to include new workflow file as adding option"
 
   
   manage_JuliaCIWorkflows:
@@ -104,7 +104,7 @@ jobs:
         if: github.event_name != 'pull_request'
         # Prüfe, ob der String **nicht leer** ist, das **richtige Format hat** und das Repository existiert
         run: |
-          REPO_OWNER_STRING=${{ github.event.repository.owner.name }}
+          REPO_OWNER_STRING=${{ github.context.repo.owner }}
 
           if [[ -n "$REPO_OWNER_STRING" && "$REPO_OWNER_STRING/JuliaCIWorkflows" =~ ^[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+$ && $(curl -s -o /dev/null -w "%{http_code}" https://api.github.com/repos/$REPO_OWNER_STRING/JuliaCIWorkflows) == "200" ]]; then
             echo "REF_REPO_OWNER=$REPO_OWNER_STRING" >> $GITHUB_ENV
@@ -178,7 +178,7 @@ jobs:
                 fi
               fi
             else
-              echo "::notice file=$FILE,title=Repo-specific_workflow::workflow $FILE is not part of ${{ env.REF_REPO_OWNER }}/JuliaCIWorkflows, it seems to be specific to this repo and will be ignored"
+              echo "::notice file=$FILE,title=Repo-specific_workflow::$FILE is not part of ${{ env.REF_REPO_OWNER }}/JuliaCIWorkflows, it seems to be specific to this repo and will be ignored"
             fi
           done
       - name: handle_arguments
@@ -206,4 +206,4 @@ jobs:
           commit-message: "updated all shared workflows"
           base: ${{ github.ref_name }}
           title: "reset/updated all shared workflows to latest ${{ env.REF_REPO_OWNER }}/JuliaCIWorkflows version"
-          body: "this will overrite all local changes to the affected files. If you wish to use repo-specific workflows, it is recommended to name their files differently that those in the juliaCIworkflows repo! Then they will be ignored when updating the other workflows ; make shure all required secrets for the loaded actions are provided (see warnings for the latest execution of the CI-update action on the relevant branch)"
+          body: "this will overrite all local changes to the affected files. If you wish to use repo-specific workflows, it is recommended to name their files differently that those in the juliaCIworkflows repo! Then they will be ignored when updating the other workflows \n \n make shure all required secrets for the loaded actions are provided (see warnings for the latest execution of the CI-update action on the relevant branch)"
