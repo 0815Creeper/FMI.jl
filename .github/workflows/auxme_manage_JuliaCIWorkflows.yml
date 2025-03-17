@@ -100,20 +100,21 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event.repository.name != 'JuliaCIWorkflows' }}
     steps:
+      - name: select_reference_repo PR_base 
+        if: github.event_name == 'pull_request'
+        run: |
+          REPO_OWNER_STRING = ${{ github.event.pull_request.base.repo.owner.login }}
+          if [[ -n "$REPO_OWNER_STRING" && "$REPO_OWNER_STRING/JuliaCIWorkflows" =~ ^[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+$ && $(curl -s -o /dev/null -w "%{http_code}" https://api.github.com/repos/$REPO_OWNER_STRING/JuliaCIWorkflows) == "200" ]]; then
+            echo "REF_REPO_OWNER=$REPO_OWNER_STRING" >> $GITHUB_ENV
+            echo "set REF_REPO_OWNER to ${{ env.REF_REPO_OWNER }}"
+          fi
       - name: select_reference_repo try_own_user
         if: github.event_name != 'pull_request'
         # Prüfe, ob der String **nicht leer** ist, das **richtige Format hat** und das Repository existiert
         run: |
           REPO_OWNER_STRING=${{ github.event.repository.owner.name }}
-          if [[ -n "$REPO_OWNER_STRING/JuliaCIWorkflows" && "$REPO_OWNER_STRING" =~ ^[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+$ && $(curl -s -o /dev/null -w "%{http_code}" https://api.github.com/repos/$REPO_OWNER_STRING/JuliaCIWorkflows) == "200" ]]; then
-            echo "REF_REPO_OWNER=$REPO_OWNER_STRING" >> $GITHUB_ENV
-            echo "set REF_REPO_OWNER to ${{ env.REF_REPO_OWNER }}"
-          fi
-      - name: select_reference_repo PR_base 
-        if: github.event_name == 'pull_request'
-        run: |
-          REPO_OWNER_STRING = ${{ github.event.pull_request.base.repo.owner.login }}
-          if [[ -n "$REPO_OWNER_STRING/JuliaCIWorkflows" && "$REPO_OWNER_STRING" =~ ^[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+$ && $(curl -s -o /dev/null -w "%{http_code}" https://api.github.com/repos/$REPO_OWNER_STRING/JuliaCIWorkflows) == "200" ]]; then
+
+          if [[ -n "$REPO_OWNER_STRING" && "$REPO_OWNER_STRING/JuliaCIWorkflows" =~ ^[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+$ && $(curl -s -o /dev/null -w "%{http_code}" https://api.github.com/repos/$REPO_OWNER_STRING/JuliaCIWorkflows) == "200" ]]; then
             echo "REF_REPO_OWNER=$REPO_OWNER_STRING" >> $GITHUB_ENV
             echo "set REF_REPO_OWNER to ${{ env.REF_REPO_OWNER }}"
           fi
