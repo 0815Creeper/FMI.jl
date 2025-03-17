@@ -104,7 +104,7 @@ jobs:
         if: github.event_name != 'pull_request'
         # Prüfe, ob der String **nicht leer** ist, das **richtige Format hat** und das Repository existiert
         run: |
-          REPO_OWNER_STRING=${{ github.context.repo.owner }}
+          REPO_OWNER_STRING=${{ github.repository_owner }}
 
           if [[ -n "$REPO_OWNER_STRING" && "$REPO_OWNER_STRING/JuliaCIWorkflows" =~ ^[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+$ && $(curl -s -o /dev/null -w "%{http_code}" https://api.github.com/repos/$REPO_OWNER_STRING/JuliaCIWorkflows) == "200" ]]; then
             echo "REF_REPO_OWNER=$REPO_OWNER_STRING" >> $GITHUB_ENV
