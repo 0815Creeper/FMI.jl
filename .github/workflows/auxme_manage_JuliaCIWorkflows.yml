@@ -107,6 +107,7 @@ jobs:
           fi
       - name: select_reference_repo PR_base 
         if: github.event_name == 'pull_request'
+        #TODO twice!!!! replace REPO_STRING
         run: |
           REPO_OWNER_STRING = ${{ github.event.pull_request.base.repo.owner.login }}
           if [[ -n "$REPO_OWNER_STRING/JuliaCIWorkflows" && "$REPO_OWNER_STRING" =~ ^[a-zA-Z0-9_-]+/[a-zA-Z0-9_-]+$ && $(curl -s -o /dev/null -w "%{http_code}" https://api.github.com/repos/$REPO_STRING/JuliaCIWorkflows) == "200" ]]; then
@@ -160,7 +161,7 @@ jobs:
           sparse-checkout: '.github'
           repository: ${{ env.REF_REPO_OWNER }}/JuliaCIWorkflows
           # access right issue!!! only main allowed, as default branch property is not public
-          branch: main
+          ref: main
           path: reference_repo 
       - name: set_github_actor
         if: github.event_name != 'pull_request'
