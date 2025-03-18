@@ -13,15 +13,31 @@ on:
       - 'Project.toml'
   
 jobs:
-  # we need to provide all examples seperately, as they are computed in parallel by this action
+  # dynamically generate matrix for jupyter; to exclude an example, change its file extenstion to be different from .ipynb
+  generate-matrix:
+    runs-on: windows-latest
+    outputs:
+      notebook_files: ${{ steps.set-matrix.outputs.notebook-files }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        
+      - name: Get Jupyter Notebooks
+        id: get-notebooks
+        run: |
+          notebooks=$(find examples/jupyter-src -name "*.ipynb" -exec basename {} \;)
+          echo "Notebooks found: $notebooks"
+          echo "name=notebook-files::$(echo $notebooks | tr ' ' ',')" >> $GITHUB_OUTPUT
+  
   jupyter:
+    needs: generate-matrix
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest] # ubuntu-latest
-        file-name: [inputs, manipulation, modelica_conference_2021, multiple_instances, multiprocessing, multithreading, parameterize, simulate, parameter_optimization]
-        julia-version: ['1.10']
+        os: [windows-latest]
+        file-name: [ ${{ fromJson(needs.generate-matrix.outputs.notebook-files) }} ]
+        julia-version: ['1'] # "1" automatically expands to the latest stable 1.x release of Julia
         julia-arch: [x64]
         experimental: [false]
 
@@ -58,6 +74,16 @@ jobs:
         run: |
           jupyter nbconvert --to script ${{ env.FILE }}
           jupyter nbconvert --to markdown ${{ env.FILE }}
+          
+      # if any of the jupyter examples in your repo exports a gif file, remove the hashtags (#) from the following command and make shure the gif, that is exported, follows the naming convention.    
+      #- name: "Fix GIFs" # on md level, requires .gif to be exportet prior during execution and follow naming convention of gifs: gif_1.gif, gif_2.gif, ...
+      #  run: |
+      #    echo "starting gif fixing"
+      #    mv examples/jupyter-src/gif_*.gif examples/jupyter-src/${{ matrix.file-name }}_files
+      #    $env:Path += ";C:\Program Files\Git\usr\bin"
+      #    awk '{if($0~/<img src="data:image\/gif;base64,[[:alpha:],[:digit:],\/,+,=]*" \/>/) {sub(/<img src="data:image\/gif;base64,[[:alpha:],[:digit:],\/,+,=]*" \/>/,"![gif](${{ matrix.file-name }}_files\/gif_"++i".gif)")}}1' examples/jupyter-src/${{ matrix.file-name }}.md > examples/jupyter-src/tmp_${{ matrix.file-name }}.md
+      #    mv -Force examples/jupyter-src/tmp_${{ matrix.file-name }}.md examples/jupyter-src/${{ matrix.file-name }}.md
+      #    echo "gifs should be fixed"
 
       # required, as nbconvert does not fail, if the notbook contains errors in the julia cells. We do not want broken examples to push and be reported as successful
       - name: "run generated jl script to determine success of example building"
