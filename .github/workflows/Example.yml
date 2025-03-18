@@ -35,7 +35,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
+        os: windows-latest
         file-name: [ ${{ fromJson(needs.generate-matrix.outputs.notebook-files) }} ]
         julia-version: ['1'] # "1" automatically expands to the latest stable 1.x release of Julia
         julia-arch: [x64]
