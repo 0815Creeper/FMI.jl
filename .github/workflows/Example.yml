@@ -15,7 +15,7 @@ on:
 jobs:
   # dynamically generate matrix for jupyter; to exclude an example, change its file extenstion to be different from .ipynb
   generate-matrix:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     outputs:
       notebook_files: ${{ steps.get-notebooks.outputs.notebook-files }}
     steps:
@@ -35,7 +35,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: windows-latest
+        os: [windows-latest]
         id: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31] # up to 32 jupyter examples are supported
         julia-version: ['1'] # "1" automatically expands to the latest stable 1.x release of Julia
         julia-arch: [x64]
@@ -74,18 +74,18 @@ jobs:
         
       - name: "Execute notebook"
         env:
-          FILE: examples/jupyter-src/${{ matrix.file-name }}.ipynb
+          FILE: examples/jupyter-src/${{ steps.get-notebook-name.outputs.notebook }}.ipynb
         run: jupyter nbconvert --ExecutePreprocessor.kernel_name="julia-${{ matrix.julia-version }}" --to notebook --inplace --execute ${{ env.FILE }}
 
       # required, as newer versions of nbconvert create multiple ouput cells for graphics outputs (eg. plots). 
       # "--to markdown" fails to select the correct way to include those afterwards and prints the svg contents directly into the md file instead of linking them as !(svg)[...]
       # if the text/html output of the plot is removed, "--to markdown" links the svgs correctly afterwards
       - name: "Fix SVGs" # on notebook (json) level: removes all cells, that have the tag "text/html" AND have "<?xml " within their content
-        run: julia -e 'using Pkg; Pkg.add("JSON"); using JSON; data = JSON.parsefile(joinpath("examples", "jupyter-src", "${{ matrix.file-name }}.ipynb"); use_mmap=false); function search_and_remove!(json, tag, content=""); if typeof(json) == Vector{Any}; for e in json; search_and_remove!(e, tag, content); end; elseif typeof(json) == Dict{String, Any}; for (t, c) in json; if contains(t, tag) && (content == "" || any([contains(line, content) for line in c])); pop!(json, t); else; search_and_remove!(c, tag, content); end; end; end; end; search_and_remove!(data, "text/html", "<?xml "); open(joinpath("examples", "jupyter-src", "tmp_${{ matrix.file-name }}.ipynb"),"w") do f; JSON.print(f, data, 1); end; mv(joinpath("examples", "jupyter-src", "tmp_${{ matrix.file-name }}.ipynb"), joinpath("examples", "jupyter-src", "${{ matrix.file-name }}.ipynb"); force=true);'
+        run: julia -e 'using Pkg; Pkg.add("JSON"); using JSON; data = JSON.parsefile(joinpath("examples", "jupyter-src", "${{ steps.get-notebook-name.outputs.notebook }}.ipynb"); use_mmap=false); function search_and_remove!(json, tag, content=""); if typeof(json) == Vector{Any}; for e in json; search_and_remove!(e, tag, content); end; elseif typeof(json) == Dict{String, Any}; for (t, c) in json; if contains(t, tag) && (content == "" || any([contains(line, content) for line in c])); pop!(json, t); else; search_and_remove!(c, tag, content); end; end; end; end; search_and_remove!(data, "text/html", "<?xml "); open(joinpath("examples", "jupyter-src", "tmp_${{ steps.get-notebook-name.outputs.notebook }}.ipynb"),"w") do f; JSON.print(f, data, 1); end; mv(joinpath("examples", "jupyter-src", "tmp_${{ steps.get-notebook-name.outputs.notebook }}.ipynb"), joinpath("examples", "jupyter-src", "${{ steps.get-notebook-name.outputs.notebook }}.ipynb"); force=true);'
 
       - name: "Export notebook to jl and md"
         env:
-          FILE: examples/jupyter-src/${{ matrix.file-name }}.ipynb
+          FILE: examples/jupyter-src/${{ steps.get-notebook-name.outputs.notebook }}.ipynb
         run: |
           jupyter nbconvert --to script ${{ env.FILE }}
           jupyter nbconvert --to markdown ${{ env.FILE }}
@@ -94,15 +94,15 @@ jobs:
       #- name: "Fix GIFs" # on md level, requires .gif to be exportet prior during execution and follow naming convention of gifs: gif_1.gif, gif_2.gif, ...
       #  run: |
       #    echo "starting gif fixing"
-      #    mv examples/jupyter-src/gif_*.gif examples/jupyter-src/${{ matrix.file-name }}_files
+      #    mv examples/jupyter-src/gif_*.gif examples/jupyter-src/${{ steps.get-notebook-name.outputs.notebook }}_files
       #    $env:Path += ";C:\Program Files\Git\usr\bin"
-      #    awk '{if($0~/<img src="data:image\/gif;base64,[[:alpha:],[:digit:],\/,+,=]*" \/>/) {sub(/<img src="data:image\/gif;base64,[[:alpha:],[:digit:],\/,+,=]*" \/>/,"![gif](${{ matrix.file-name }}_files\/gif_"++i".gif)")}}1' examples/jupyter-src/${{ matrix.file-name }}.md > examples/jupyter-src/tmp_${{ matrix.file-name }}.md
-      #    mv -Force examples/jupyter-src/tmp_${{ matrix.file-name }}.md examples/jupyter-src/${{ matrix.file-name }}.md
+      #    awk '{if($0~/<img src="data:image\/gif;base64,[[:alpha:],[:digit:],\/,+,=]*" \/>/) {sub(/<img src="data:image\/gif;base64,[[:alpha:],[:digit:],\/,+,=]*" \/>/,"![gif](${{ steps.get-notebook-name.outputs.notebook }}_files\/gif_"++i".gif)")}}1' examples/jupyter-src/${{ steps.get-notebook-name.outputs.notebook }}.md > examples/jupyter-src/tmp_${{ steps.get-notebook-name.outputs.notebook }}.md
+      #    mv -Force examples/jupyter-src/tmp_${{ steps.get-notebook-name.outputs.notebook }}.md examples/jupyter-src/${{ steps.get-notebook-name.outputs.notebook }}.md
       #    echo "gifs should be fixed"
 
       # required, as nbconvert does not fail, if the notbook contains errors in the julia cells. We do not want broken examples to push and be reported as successful
       - name: "run generated jl script to determine success of example building"
-        run: julia --project=examples/ examples/jupyter-src/${{ matrix.file-name }}.jl
+        run: julia --project=examples/ examples/jupyter-src/${{ steps.get-notebook-name.outputs.notebook }}.jl
 
       - name: "auto-commit (retry on merge)"
         # only push to examples branch, if we execute on the current main branch of this repo and the example build successfully!
@@ -112,7 +112,7 @@ jobs:
         # successful termination is still likely, even if max_attemts is < number of examples, as long as runtimes of most examples do not match eachother. This is also why there is no prevention of simultaneous runs of this action implemented.
         uses: nick-fields/retry@v3
         env: 
-          CI_COMMIT_MESSAGE: jupyter-example-${{ matrix.file-name }}-${{ matrix.os }}-${{ matrix.julia-version }}-${{ matrix.julia-arch }}-${{ matrix.experimental }}[${{ github.ref_name }}]
+          CI_COMMIT_MESSAGE: jupyter-example-${{ steps.get-notebook-name.outputs.notebook }}-${{ matrix.os }}-${{ matrix.julia-version }}-${{ matrix.julia-arch }}-${{ matrix.experimental }}[${{ github.ref_name }}]
           CI_COMMIT_AUTHOR: github-actions[bot]
           EXAMPLES_PATH: examples/jupyter-src
         # Fetch all and clear the stash. Include all files from the examples folder (just generated those) to the stash and switch the branch.
@@ -127,10 +127,10 @@ jobs:
           command: |
             git fetch --all
             git stash clear
-            git stash --include-untracked -- ${{ env.EXAMPLES_PATH }}/${{ matrix.file-name }}*
+            git stash --include-untracked -- ${{ env.EXAMPLES_PATH }}/${{ steps.get-notebook-name.outputs.notebook }}*
             git switch examples
             git reset --hard origin/examples
-            rm -r ${{ env.EXAMPLES_PATH }}/${{ matrix.file-name }}*
+            rm -r ${{ env.EXAMPLES_PATH }}/${{ steps.get-notebook-name.outputs.notebook }}*
             git checkout stash -f -- ${{ env.EXAMPLES_PATH }}
             git stash apply --index
             git stash drop
@@ -139,7 +139,7 @@ jobs:
             git config --global core.autocrlf false
             git pull
             git reset
-            git add ${{ env.EXAMPLES_PATH }}/${{ matrix.file-name }}*
+            git add ${{ env.EXAMPLES_PATH }}/${{ steps.get-notebook-name.outputs.notebook }}*
             git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
             git push origin examples || (git reset --soft HEAD~1 && (exit 1))
 
