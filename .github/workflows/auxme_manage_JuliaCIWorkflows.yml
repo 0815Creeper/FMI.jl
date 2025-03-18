@@ -215,8 +215,9 @@ jobs:
                 echo "::warning file=$FILE,title=different_version_found::$FILE is different, adding most recent version from ${{ env.REF_REPO_OWNER }}/JuliaCIWorkflows"
                 cp -f reference_repo/.github/$FILE working_repo/.github/$FILE
               fi
-            elif [[ ! "$FILE" =~ "${{ github.event.repository.name }}" ]]
-              echo "::notice file=$FILE,title=Repo-specific_workflow::$FILE is not part of ${{ env.REF_REPO_OWNER }}/JuliaCIWorkflows, it seems to be specific to this repo and will be ignored. Change its filename to contain ${{ github.event.repository.name }} to suppress this notice."
+            elif [[ ! "$FILE" =~ "${{ github.event.repository.name }}" ]]; then
+            
+              echo "::notice file=$FILE,title=Repo-specific_workflow::$FILE is not part of ${{ env.REF_REPO_OWNER }}/JuliaCIWorkflows, it seems to be specific to this repo and will be ignored. Change its filename to contain \"${{ github.event.repository.name }}\" to suppress this notice."
             fi
           done
       # file_WARNING gets printed if it exists, recommended format is the github-action warning format
