@@ -87,7 +87,7 @@ jobs:
                     echo "NOT listing $FILE"
                   else
                     echo "$FILE -> options list"
-                    echo "${LEADING_WHITESPACES}- '$FILE_WITHOUT_EXTENSION'" >> ".github/workflows/${{ github.workflow }}.yml_tempfile_by_action"
+                    echo -e "${LEADING_WHITESPACES}- '$FILE_WITHOUT_EXTENSION'\r" >> ".github/workflows/${{ github.workflow }}.yml_tempfile_by_action"
                   fi
                 done
             elif [[ "$replaced_first_occurance" = false && "$within_markers" = true && "$zeile" =~ "#MARKER_FOR_AUTO_UPDATE_END" ]]; then
@@ -243,7 +243,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           if [[ `git status --porcelain` ]]; then
-            echo "::error title=workflows_not_valid::worksflows are not up-to-date with ${{ env.REF_REPO_OWNER }}/JuliaCIWorkflows. Update them. If you want to add a workflow only for this repo, make shure it has not the same name as any workflow from ${{ env.REF_REPO_OWNER }}/JuliaCIWorkflows. It is recommended, that the workflows filename contains ${{ github.event.repository.name }}"
+            echo "::error title=workflows_not_valid::worksflows are not up-to-date with ${{ env.REF_REPO_OWNER }}/JuliaCIWorkflows. Update them. If you want to add a workflow only for this repo, make shure it has not the same name as any workflow from ${{ env.REF_REPO_OWNER }}/JuliaCIWorkflows. It is recommended, that the workflows filename contains \"${{ github.event.repository.name }}\""
             exit 1
           fi
 
