@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       notebookfiles: ${{ steps.get-notebooks.outputs.notebookfiles }}
+      notebookfiles_len: ${{ steps.get-notebooks.outputs.notebookfiles_len }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -28,6 +29,8 @@ jobs:
           notebooks=$(find examples/jupyter-src -name "*.ipynb" -exec basename {} \; | tr '[:space:]' ',' | tr '[:space:]' ',')
           echo "Notebooks found: ${notebooks:0:-1}"
           echo "notebookfiles=$(echo ${notebooks:0:-1})" >> $GITHUB_OUTPUT
+          echo "notebookfiles_len=$(echo ${notebooks:0:-1} | split(',') | length)" >> $GITHUB_OUTPUT
+          echo "len: $(echo ${notebooks:0:-1} | split(',') | length)"
   
   jupyter:
     needs: generate-matrix
@@ -37,11 +40,11 @@ jobs:
       matrix:
         os: [windows-latest]
         id: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15] # up to 16 jupyter examples are supported as of now. If required, just add more IDs here. 
-        if: ${{ matrix.id < needs.generate-matrix.outputs.notebook-files | split(',') | length }}  # Job überspringen, wenn ID größer oder gleich der Anzahl der Notebooks ist
         julia-version: ['1'] # "1" automatically expands to the latest stable 1.x release of Julia
         julia-arch: [x64]
         experimental: [false]
 
+    if: ${{ matrix.id < needs.generate-matrix.outputs.notebookfiles_len }}  # Job überspringen, wenn ID größer oder gleich der Anzahl der Notebooks ist
     steps: 
       - name: Get notebook name based on matrix ID
         # powershell syntax, not bash!, we are on windows...
