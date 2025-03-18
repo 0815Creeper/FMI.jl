@@ -37,6 +37,7 @@ jobs:
       matrix:
         os: [windows-latest]
         id: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15] # up to 16 jupyter examples are supported as of now. If required, just add more IDs here. 
+        if: ${{ matrix.id < needs.generate-matrix.outputs.notebook-files | split(',') | length }}  # Job überspringen, wenn ID größer oder gleich der Anzahl der Notebooks ist
         julia-version: ['1'] # "1" automatically expands to the latest stable 1.x release of Julia
         julia-arch: [x64]
         experimental: [false]
