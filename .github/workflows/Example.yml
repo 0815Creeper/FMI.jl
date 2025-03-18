@@ -11,7 +11,7 @@ on:
       - 'examples/**'
       - '.github/workflows/Example.yml'
       - 'Project.toml'
-  
+
 jobs:
   # dynamically generate matrix for jupyter; to exclude an example, change its file extenstion to be different from .ipynb
   generate-matrix:
