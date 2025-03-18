@@ -44,7 +44,6 @@ jobs:
         julia-arch: [x64]
         experimental: [false]
 
-    if: ${{ matrix.id < needs.generate-matrix.outputs.notebookfiles_len }}  # Job überspringen, wenn ID größer oder gleich der Anzahl der Notebooks ist
     steps: 
       - name: Get notebook name based on matrix ID
         # powershell syntax, not bash!, we are on windows...
@@ -66,21 +65,26 @@ jobs:
           echo "filename=$(echo ${notebook})" >> $GITHUB_OUTPUT
 
       - name: "Check out repository"
+        if: ${{ matrix.id < needs.generate-matrix.outputs.notebookfiles_len }}  # Job überspringen, wenn ID größer oder gleich der Anzahl der Notebooks ist
         uses: actions/checkout@v4
 
       - name: "Set up Julia"
+        if: ${{ matrix.id < needs.generate-matrix.outputs.notebookfiles_len }}  # Job überspringen, wenn ID größer oder gleich der Anzahl der Notebooks ist
         uses: julia-actions/setup-julia@v2
         with:
             version: ${{ matrix.julia-version }}
             arch: ${{ matrix.julia-arch }}
 
       - name: "Install dependencies"
+        if: ${{ matrix.id < needs.generate-matrix.outputs.notebookfiles_len }}  # Job überspringen, wenn ID größer oder gleich der Anzahl der Notebooks ist
         run: julia --project=examples/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd())); Pkg.instantiate()'
 
       - name: "Install packages"
+        if: ${{ matrix.id < needs.generate-matrix.outputs.notebookfiles_len }}  # Job überspringen, wenn ID größer oder gleich der Anzahl der Notebooks ist
         run: pip install jupyter nbconvert
         
       - name: "Execute notebook"
+        if: ${{ matrix.id < needs.generate-matrix.outputs.notebookfiles_len }}  # Job überspringen, wenn ID größer oder gleich der Anzahl der Notebooks ist
         env:
           FILE: examples/jupyter-src/${{ steps.get-notebook-name.outputs.notebook }}.ipynb
         run: jupyter nbconvert --ExecutePreprocessor.kernel_name="julia-${{ matrix.julia-version }}" --to notebook --inplace --execute ${{ env.FILE }}
@@ -89,9 +93,11 @@ jobs:
       # "--to markdown" fails to select the correct way to include those afterwards and prints the svg contents directly into the md file instead of linking them as !(svg)[...]
       # if the text/html output of the plot is removed, "--to markdown" links the svgs correctly afterwards
       - name: "Fix SVGs" # on notebook (json) level: removes all cells, that have the tag "text/html" AND have "<?xml " within their content
+        if: ${{ matrix.id < needs.generate-matrix.outputs.notebookfiles_len }}  # Job überspringen, wenn ID größer oder gleich der Anzahl der Notebooks ist
         run: julia -e 'using Pkg; Pkg.add("JSON"); using JSON; data = JSON.parsefile(joinpath("examples", "jupyter-src", "${{ steps.get-notebook-name.outputs.notebook }}.ipynb"); use_mmap=false); function search_and_remove!(json, tag, content=""); if typeof(json) == Vector{Any}; for e in json; search_and_remove!(e, tag, content); end; elseif typeof(json) == Dict{String, Any}; for (t, c) in json; if contains(t, tag) && (content == "" || any([contains(line, content) for line in c])); pop!(json, t); else; search_and_remove!(c, tag, content); end; end; end; end; search_and_remove!(data, "text/html", "<?xml "); open(joinpath("examples", "jupyter-src", "tmp_${{ steps.get-notebook-name.outputs.notebook }}.ipynb"),"w") do f; JSON.print(f, data, 1); end; mv(joinpath("examples", "jupyter-src", "tmp_${{ steps.get-notebook-name.outputs.notebook }}.ipynb"), joinpath("examples", "jupyter-src", "${{ steps.get-notebook-name.outputs.notebook }}.ipynb"); force=true);'
 
       - name: "Export notebook to jl and md"
+        if: ${{ matrix.id < needs.generate-matrix.outputs.notebookfiles_len }}  # Job überspringen, wenn ID größer oder gleich der Anzahl der Notebooks ist
         env:
           FILE: examples/jupyter-src/${{ steps.get-notebook-name.outputs.notebook }}.ipynb
         run: |
@@ -110,11 +116,12 @@ jobs:
 
       # required, as nbconvert does not fail, if the notbook contains errors in the julia cells. We do not want broken examples to push and be reported as successful
       - name: "run generated jl script to determine success of example building"
+        if: 
         run: julia --project=examples/ examples/jupyter-src/${{ steps.get-notebook-name.outputs.notebook }}.jl
 
       - name: "auto-commit (retry on merge)"
         # only push to examples branch, if we execute on the current main branch of this repo and the example build successfully!
-        if: success() && github.event_name != 'pull_request' && github.ref_name == 'main'
+        if: success() && github.event_name != 'pull_request' && github.ref_name == 'main' && ${{ matrix.id < needs.generate-matrix.outputs.notebookfiles_len }}  # Job überspringen, wenn ID größer oder gleich der Anzahl der Notebooks ist
         # retrying is required, as a race condition can occur: all parallel example builds try to push to the same branch. Instead of merging, retrying is the cleanest solution
         # successful termination is guaranteed, if max_attemts is >= the number of jupyter-examples plus one (pluto-slider-server) as each race condition ends with one example successfully pushing, as long as ONLY ONE PUSHING ACTION-RUN IS RUNNING AT THE SAME TIME (only pushing for runs on main branch)
         # successful termination is still likely, even if max_attemts is < number of examples, as long as runtimes of most examples do not match eachother. This is also why there is no prevention of simultaneous runs of this action implemented.
