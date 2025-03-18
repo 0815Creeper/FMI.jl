@@ -17,7 +17,7 @@ jobs:
   generate-matrix:
     runs-on: windows-latest
     outputs:
-      notebook_files: ${{ steps.set-matrix.outputs.notebook-files }}
+      notebook_files: ${{ steps.get-notebooks.outputs.notebook-files }}
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
@@ -27,7 +27,7 @@ jobs:
         run: |
           notebooks=$(find examples/jupyter-src -name "*.ipynb" -exec basename {} \;)
           echo "Notebooks found: $notebooks"
-          echo "name=notebook-files::$(echo $notebooks | tr ' ' ',')" >> $GITHUB_OUTPUT
+          echo "notebook-files=$(echo $notebooks | tr ' ' ',')" >> $GITHUB_OUTPUT
   
   jupyter:
     needs: generate-matrix
@@ -36,12 +36,27 @@ jobs:
       fail-fast: false
       matrix:
         os: windows-latest
-        file-name: [ ${{ fromJson(needs.generate-matrix.outputs.notebook-files) }} ]
+        id: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31] # up to 32 jupyter examples are supported
         julia-version: ['1'] # "1" automatically expands to the latest stable 1.x release of Julia
         julia-arch: [x64]
         experimental: [false]
 
-    steps:
+    steps: 
+      - name: Get notebook name based on matrix ID
+        id: get-notebook-name
+        run: |
+          notebooks=(${{ fromJson(needs.generate-matrix.outputs.notebook-files) }})
+          notebook_count=${#notebooks[@]}
+          
+          if [ ${matrix.id} -ge $notebook_count ]; then
+            echo "Job überspringen, ID ${matrix.id} überschreitet die Anzahl der Notebooks ($notebook_count)."
+            exit 0
+          fi
+
+          notebook=${notebooks[${matrix.id}]}
+          echo "Job ${matrix.id} wird das Notebook $notebook ausführen"
+          echo "filename=$(echo ${notebook})" >> $GITHUB_OUTPUT
+
       - name: "Check out repository"
         uses: actions/checkout@v4
 
