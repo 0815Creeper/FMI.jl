@@ -234,12 +234,12 @@ jobs:
           fi
           if [ -f reference_repo/.github/${{ inputs.add_workflow }}_MESSAGE ]; then
             OLD_MSG=${{ env.PR_MESSAGE_ADDITION }}
-            echo "PR_MESSAGE_ADDITION<<END_MARKER_PR_MESSAGE_ADDITION"
-            printf "${OLD_MSG}\n$(cat reference_repo/.github/${{ inputs.add_workflow }}_MESSAGE)"
-            echo "END_MARKER_PR_MESSAGE_ADDITION"
-            echo "PR_MESSAGE_ADDITION<<END_MARKER_PR_MESSAGE_ADDITION" >> $GITHUB_ENV
-            printf "${OLD_MSG}\n$(cat reference_repo/.github/${{ inputs.add_workflow }}_MESSAGE)" >> $GITHUB_ENV
-            echo "END_MARKER_PR_MESSAGE_ADDITION" >> $GITHUB_ENV
+            printf "PR_MESSAGE_ADDITION<<END_MARKER_PR_MESSAGE_ADDITION\n"
+            printf "${OLD_MSG}$(cat reference_repo/.github/${{ inputs.add_workflow }}_MESSAGE)\n"
+            printf "END_MARKER_PR_MESSAGE_ADDITION\n"
+            printf "PR_MESSAGE_ADDITION<<END_MARKER_PR_MESSAGE_ADDITION\n" >> $GITHUB_ENV
+            printf "${OLD_MSG}$(cat reference_repo/.github/${{ inputs.add_workflow }}_MESSAGE)\n" >> $GITHUB_ENV
+            printf "END_MARKER_PR_MESSAGE_ADDITION\n" >> $GITHUB_ENV
           fi
           echo "Message to be appended to PR-Message:"
           echo "${{ env.PR_MESSAGE_ADDITION }}" 
