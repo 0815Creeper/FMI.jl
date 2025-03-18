@@ -25,7 +25,7 @@ jobs:
       - name: Get Jupyter Notebooks
         id: get-notebooks
         run: |
-          notebooks=$(find examples/jupyter-src -name "*.ipynb" -exec basename {} \; | tr '[:space:]' ',')
+          notebooks=$(find examples/jupyter-src -name "*.ipynb" -exec basename {} \; | tr '[:space:]' ',' | tr '[:space:]' ',')
           echo "Notebooks found: ${notebooks:0:-1}"
           echo "notebookfiles=$(echo ${notebooks:0:-1})" >> $GITHUB_OUTPUT
   
@@ -48,14 +48,17 @@ jobs:
         run: |
           $notebooks = "${{ needs.generate-matrix.outputs.notebookfiles }}" -split ","
           $notebookCount = $notebooks.Length
+          Write-Host "Notebooks: $notebooks"
+          Write-Host "Anzahl der Notebooks: $notebookCount"
           
-          if ($env:Matrix_ID -ge $notebookCount) {
-            Write-Host "Job überspringen, ID $env:Matrix_ID überschreitet die Anzahl der Notebooks ($notebookCount)."
+          if (${{ matrix.id }} -ge $notebookCount) {
+            Write-Host "Job überspringen, ID ${{ matrix.id }} überschreitet die Anzahl der Notebooks ($notebookCount)."
             exit 0
           }
 
-          $notebook = $notebooks[$env:Matrix_ID]
-          Write-Host "Job $env:Matrix_ID wird das Notebook $notebook ausführen"
+          $notebook = $notebooks[${{ matrix.id }}]
+          $notebook = [System.IO.Path]::GetFileNameWithoutExtension($notebook)
+          Write-Host "Job ${{ matrix.id }} wird das Notebook $notebook ausführen"
           echo "filename=$(echo ${notebook})" >> $GITHUB_OUTPUT
 
       - name: "Check out repository"
