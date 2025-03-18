@@ -260,4 +260,4 @@ jobs:
           commit-message: "updated all shared workflows"
           base: ${{ github.ref_name }}
           title: "reset/updated all shared workflows to latest ${{ env.REF_REPO_OWNER }}/JuliaCIWorkflows version"
-          body: "default hints: this will overrite all local changes to the affected files. If you wish to use repo-specific workflows, it is recommended to name their files differently that those in the juliaCIworkflows repo! Then they will be ignored when updating the other workflows \n \n \n ${{ env.PR_MESSAGE_ADDITION }}"
+          body: "default hints: this will overrite all local changes to the affected files. If you wish to use repo-specific workflows, it is recommended to name their files differently that those in the juliaCIworkflows repo! Then they will be ignored when updating the other workflows \n \n specific hints\n ${{ env.PR_MESSAGE_ADDITION }}"
