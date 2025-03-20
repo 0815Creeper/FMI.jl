@@ -1,4 +1,4 @@
-name: Test v1.10 (LTS)
+name: Test (LTS)
 
 on:
   workflow_dispatch:
@@ -9,13 +9,14 @@ on:
     paths:
       - 'src/**'
       - 'test/**'
-      - '.github/workflows/Test.yml'
+      - '.github/workflows/TestLTS.yml'
       - 'Project.toml'
 
 jobs:
   test:
     runs-on: ${{ matrix.os }}
     strategy:
+      # Don't cancel in-progress jobs if any matrix job fails
       fail-fast: false
       matrix:
         julia-version: ['lts']
